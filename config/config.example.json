@@ -1,0 +1,177 @@
+{
+  "version": "1.0.0",
+  "environment": "development",
+  
+  "broker": {
+    "active": "zerodha",
+    "zerodha": {
+      "api_key": "YOUR_ZERODHA_API_KEY_HERE",
+      "api_secret": "YOUR_ZERODHA_API_SECRET_HERE",
+      "user_id": "YOUR_ZERODHA_USER_ID",
+      "password": "YOUR_ZERODHA_PASSWORD"
+    },
+    "upstox": {
+      "api_key": "YOUR_UPSTOX_API_KEY_HERE",
+      "api_secret": "YOUR_UPSTOX_API_SECRET_HERE",
+      "redirect_uri": "http://localhost:5000/callback"
+    },
+    "paper_trading": {
+      "enabled": true,
+      "initial_capital": 100000,
+      "note": "Set to true for testing without real money"
+    }
+  },
+  
+  "trading": {
+    "capital": 100000,
+    "max_risk_per_trade_percent": 2.0,
+    "max_daily_loss_percent": 5.0,
+    "max_open_positions": 5,
+    "position_size_method": "fixed_risk",
+    "default_stop_loss_percent": 1.0,
+    "default_target_percent": 2.0,
+    "max_position_size_percent": 20.0
+  },
+  
+  "market_hours": {
+    "timezone": "Asia/Kolkata",
+    "pre_market_start": "09:00",
+    "market_open": "09:15",
+    "market_close": "15:30",
+    "post_market_end": "16:00",
+    "trading_days": [1, 2, 3, 4, 5],
+    "note": "1=Monday, 5=Friday. NSE is closed on weekends."
+  },
+  
+  "data_sources": {
+    "nse_bse": {
+      "enabled": true,
+      "provider": "yfinance",
+      "symbols": ["RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS"],
+      "update_interval_seconds": 5,
+      "historical_days": 60
+    },
+    "twitter": {
+      "enabled": false,
+      "api_key": "YOUR_TWITTER_API_KEY",
+      "api_secret": "YOUR_TWITTER_API_SECRET",
+      "access_token": "YOUR_ACCESS_TOKEN",
+      "access_token_secret": "YOUR_ACCESS_TOKEN_SECRET",
+      "handles_to_monitor": ["@nseindia", "@BSEIndia"],
+      "keywords": ["#nifty", "#sensex", "#stockmarket"],
+      "update_interval_seconds": 120
+    },
+    "news": {
+      "enabled": true,
+      "sources": [
+        "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+        "https://www.moneycontrol.com/rss/marketoutlook.xml"
+      ],
+      "update_interval_seconds": 300
+    }
+  },
+  
+  "database": {
+    "type": "sqlite",
+    "path": "data/trading.db",
+    "backup_enabled": true,
+    "backup_interval_hours": 24,
+    "max_backup_files": 7
+  },
+  
+  "signals": {
+    "active_strategies": ["rsi_macd_scalping", "bollinger_mean_reversion"],
+    "rsi_macd_scalping": {
+      "rsi_period": 14,
+      "rsi_oversold": 30,
+      "rsi_overbought": 70,
+      "macd_fast": 12,
+      "macd_slow": 26,
+      "macd_signal": 9,
+      "min_confidence": 0.7
+    },
+    "bollinger_mean_reversion": {
+      "period": 20,
+      "std_dev": 2,
+      "min_confidence": 0.65
+    },
+    "volume_filter": {
+      "enabled": true,
+      "min_volume_multiplier": 1.5,
+      "note": "Only trade when volume > 1.5x average"
+    }
+  },
+  
+  "risk_management": {
+    "pre_market_checks": {
+      "check_available_margin": true,
+      "check_daily_loss_limit": true,
+      "check_position_correlation": false
+    },
+    "stop_loss": {
+      "type": "percentage",
+      "trailing_enabled": false,
+      "trailing_trigger_percent": 1.0,
+      "trailing_step_percent": 0.5
+    },
+    "position_sizing": {
+      "method": "kelly_criterion",
+      "kelly_fraction": 0.25,
+      "max_kelly_position_percent": 10.0
+    }
+  },
+  
+  "api": {
+    "host": "0.0.0.0",
+    "port": 5000,
+    "debug": true,
+    "cors_enabled": true,
+    "rate_limit": {
+      "enabled": false,
+      "requests_per_minute": 60
+    }
+  },
+  
+  "logging": {
+    "level": "INFO",
+    "console_output": true,
+    "file_output": true,
+    "log_rotation": {
+      "enabled": true,
+      "max_bytes": 10485760,
+      "backup_count": 5
+    },
+    "log_files": {
+      "app": "logs/app.log",
+      "trades": "logs/trades.log",
+      "errors": "logs/errors.log",
+      "health": "logs/health.log"
+    }
+  },
+  
+  "monitoring": {
+    "health_check_interval_seconds": 60,
+    "alerts": {
+      "enabled": false,
+      "telegram": {
+        "bot_token": "YOUR_TELEGRAM_BOT_TOKEN",
+        "chat_id": "YOUR_TELEGRAM_CHAT_ID"
+      },
+      "email": {
+        "smtp_server": "smtp.gmail.com",
+        "smtp_port": 587,
+        "username": "YOUR_EMAIL@gmail.com",
+        "password": "YOUR_APP_PASSWORD",
+        "to_address": "YOUR_EMAIL@gmail.com"
+      }
+    }
+  },
+  
+  "backtesting": {
+    "enabled": false,
+    "start_date": "2023-01-01",
+    "end_date": "2024-12-31",
+    "commission_percent": 0.03,
+    "slippage_percent": 0.05
+  }
+}
